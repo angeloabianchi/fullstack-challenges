@@ -19,6 +19,10 @@ class Cookbook
     return @recipes
   end
 
+  def find(index)
+    @recipes[index - 1]
+  end
+
   def destroy(recipe_index)
     @recipes.delete_at(recipe_index)
     # 1. Save SVG
@@ -32,7 +36,10 @@ class Cookbook
     CSV.foreach(@csv_file_path, **csv_options) do |row|
       name = row['Name'].to_s
       description = row['Description'].to_s
-      row_recipe = Recipe.new(name, description)
+      rating = row['Rating'].to_i
+      done = row['Done']
+      prep_time = row['PrepTime']
+      row_recipe = Recipe.new(name, description, rating, done === "Yes" ? true : false, prep_time)
       @recipes << row_recipe
     end
   end
@@ -40,9 +47,9 @@ class Cookbook
   def save_csv
     csv_options = { col_sep: ',', quote_char: '"', headers: :first_row }
     CSV.open(@csv_file_path, 'wb', **csv_options) do |csv|
-      csv << ['Name', 'Description']
+      csv << ['Name', 'Description', 'Rating', 'Done', 'PrepTime']
       @recipes.each do |recipe|
-        csv << [recipe.name, recipe.description]
+        csv << [recipe.name, recipe.description, recipe.rating, recipe.done ? "Yes" : "No", recipe.prep_time]
       end
     end
   end
