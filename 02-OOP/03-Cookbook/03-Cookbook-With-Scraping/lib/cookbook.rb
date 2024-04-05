@@ -46,6 +46,7 @@ class Cookbook
 
   def save_csv
     csv_options = { col_sep: ',', quote_char: '"', headers: :first_row }
+
     CSV.open(@csv_file_path, 'wb', **csv_options) do |csv|
       csv << ['Name', 'Description', 'Rating', 'Done', 'PrepTime']
       @recipes.each do |recipe|
